@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - LibNexus Library{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-banner">
+    <h1 class="hero-title">Library Management System</h1>
+    <p class="hero-subtitle">Catalog, search, track, and manage your complete book collection with seamless CRUD workflows and high efficiency.</p>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="{% url 'add_book' %}" class="btn-primary" style="padding: 0.8rem 1.75rem;">
+            <i class="fa-solid fa-plus"></i> Add New Book
+        </a>
+        <a href="{% url 'get_all_books' %}" class="btn-secondary" style="padding: 0.8rem 1.75rem;">
+            <i class="fa-solid fa-layer-group"></i> Explore Catalog
+        </a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="fa-solid fa-book"></i>
+        </div>
+        <div>
+            <div class="stat-label">Total Catalog Books</div>
+            <div class="stat-value">{{ total_books }}</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+        <div>
+            <div class="stat-label">Total Library Value</div>
+            <div class="stat-value">${{ total_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i class="fa-solid fa-tags"></i>
+        </div>
+        <div>
+            <div class="stat-label">Active Genres</div>
+            <div class="stat-value">{{ genres_count }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Books Section -->
+<div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 700;">Recently Added</h2>
+        <a href="{% url 'get_all_books' %}" class="btn-secondary btn-sm">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    {% if recent_books %}
+    <div class="books-grid">
+        {% for book in recent_books %}
+        <div class="book-card">
+            <div class="book-card-cover-wrap">
+                {% if book.cover %}
+                    <img src="{{ book.cover.url }}" alt="{{ book.title }}" />
+                {% else %}
+                    <div class="cover-fallback">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="book-card-body">
+                <span class="badge-genre" style="align-self: flex-start; margin-bottom: 0.5rem;">{{ book.genre }}</span>
+                <h3 class="book-card-title">{{ book.title }}</h3>
+                <p class="book-card-author">by {{ book.author }}</p>
+                <div class="book-card-footer">
+                    <span class="price-text">${{ book.price }}</span>
+                    <a href="{% url 'book_detail' book.pk %}" class="btn-secondary btn-sm">Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass-card" style="text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">📚</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">No books found in the library</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Get started by creating your very first book entry.</p>
+        <a href="{% url 'add_book' %}" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Book Now</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

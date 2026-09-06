@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Book - LibNexus{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{% url 'get_all_books' %}" class="btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+        </a>
+    </div>
+
+    <div class="glass-card">
+        <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
+            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800;">
+                <i class="fa-solid fa-circle-plus" style="color: var(--primary); margin-right: 0.5rem;"></i> Add New Book
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
+                Enter the details below to add a new book to the library repository.
+            </p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}"><i class="fa-solid fa-heading" style="width: 18px;"></i> Book Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.title.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.author.id_for_label }}"><i class="fa-solid fa-user-pen" style="width: 18px;"></i> Author Name</label>
+                {{ form.author }}
+                {% if form.author.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.author.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="{{ form.genre.id_for_label }}"><i class="fa-solid fa-tags" style="width: 18px;"></i> Genre</label>
+                    {{ form.genre }}
+                    {% if form.genre.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.genre.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.isbn.id_for_label }}"><i class="fa-solid fa-barcode" style="width: 18px;"></i> ISBN Number</label>
+                    {{ form.isbn }}
+                    {% if form.isbn.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.isbn.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.price.id_for_label }}"><i class="fa-solid fa-dollar-sign" style="width: 18px;"></i> Price ($)</label>
+                {{ form.price }}
+                {% if form.price.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.cover.id_for_label }}"><i class="fa-solid fa-image" style="width: 18px;"></i> Book Cover Image</label>
+                {{ form.cover }}
+                {% if form.cover.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.cover.errors.0 }}</div>{% endif %}
+                
+                <div id="imagePreviewBox" class="cover-preview-box" style="display: none;">
+                    <img id="imagePreview" src="#" alt="Cover Preview" class="cover-preview-thumb" />
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Selected Cover Preview</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
+                <a href="{% url 'get_all_books' %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary" style="padding: 0.75rem 1.75rem;">
+                    <i class="fa-solid fa-check"></i> Save Book
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const coverInput = document.getElementById('id_cover_input');
+    const previewBox = document.getElementById('imagePreviewBox');
+    const previewImg = document.getElementById('imagePreview');
+
+    if (coverInput) {
+        coverInput.addEventListener('change', function() {
+            const [file] = this.files;
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+                previewBox.style.display = 'flex';
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - LibNexus{% endblock %}
+
+{% block content %}
+<!-- Admin Header -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+            <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <span style="width: 8px; height: 8px; background: #34d399; border-radius: 50%; display: inline-block;"></span> SYSTEM ACTIVE
+            </span>
+            <span style="color: var(--text-muted); font-size: 0.85rem;">LibNexus v2.4 Admin Engine</span>
+        </div>
+        <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2.25rem; font-weight: 800;">
+            <i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 0.5rem;"></i> Admin Control Center
+        </h1>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="/admin/" target="_blank" class="btn-secondary" style="border-color: var(--primary-glow); color: #a5b4fc;">
+            <i class="fa-solid fa-user-shield"></i> Open Django Admin
+        </a>
+        <a href="{% url 'add_book' %}" class="btn-primary">
+            <i class="fa-solid fa-plus"></i> Create Book Entry
+        </a>
+    </div>
+</div>
+
+<!-- Executive Metric Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="fa-solid fa-boxes-stacked"></i>
+        </div>
+        <div>
+            <div class="stat-label">Total Inventory Items</div>
+            <div class="stat-value">{{ total_books }}</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="fa-solid fa-vault"></i>
+        </div>
+        <div>
+            <div class="stat-label">Library Net Valuation</div>
+            <div class="stat-value">${{ total_value|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div>
+            <div class="stat-label">Average Unit Price</div>
+            <div class="stat-value">${{ avg_price|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee;">
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div>
+            <div class="stat-label">Categorized Genres</div>
+            <div class="stat-value">{{ genre_stats|length }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Analytics Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-bottom: 2rem;">
+    <!-- Genre Breakdown -->
+    <div class="glass-card" style="margin-bottom: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700;">
+                <i class="fa-solid fa-chart-pie" style="color: var(--accent-cyan); margin-right: 0.5rem;"></i> Genre Distribution
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">By Volume</span>
+        </div>
+
+        {% if genre_stats %}
+        <div style="display: flex; flex-direction: column; gap: 1.1rem;">
+            {% for item in genre_stats %}
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.35rem; font-weight: 600;">
+                    <span>{{ item.name }}</span>
+                    <span style="color: var(--text-secondary);">{{ item.count }} book{{ item.count|pluralize }} ({{ item.percentage }}%)</span>
+                </div>
+                <div style="height: 8px; width: 100%; background: rgba(255, 255, 255, 0.06); border-radius: 9999px; overflow: hidden;">
+                    <div style="height: 100%; width: {{ item.percentage }}%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); border-radius: 9999px;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); text-align: center; padding: 2rem 0;">No genre metrics available yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Catalog Highlights & Quick Links -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Price Extremes -->
+        <div class="glass-card" style="margin-bottom: 0;">
+            <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem;">
+                <i class="fa-solid fa-arrow-trend-up" style="color: var(--accent-emerald); margin-right: 0.5rem;"></i> Inventory Price Extremes
+            </h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <!-- Highest -->
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: var(--radius-md);">
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: #34d399; font-weight: 700; letter-spacing: 0.05em;">Highest Priced</span>
+                    {% if highest_book %}
+                        <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0.25rem 0;">${{ highest_book.price }}</div>
+                        <a href="{% url 'book_detail' highest_book.pk %}" style="font-size: 0.85rem; color: #6ee7b7; text-decoration: none; font-weight: 600;" class="book-card-title">
+                            {{ highest_book.title }}
+                        </a>
+                    {% else %}
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">N/A</div>
+                    {% endif %}
+                </div>
+
+                <!-- Lowest -->
+                <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); padding: 1rem; border-radius: var(--radius-md);">
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: #818cf8; font-weight: 700; letter-spacing: 0.05em;">Most Affordable</span>
+                    {% if lowest_book %}
+                        <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin: 0.25rem 0;">${{ lowest_book.price }}</div>
+                        <a href="{% url 'book_detail' lowest_book.pk %}" style="font-size: 0.85rem; color: #a5b4fc; text-decoration: none; font-weight: 600;" class="book-card-title">
+                            {{ lowest_book.title }}
+                        </a>
+                    {% else %}
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">N/A</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Administration Panel -->
+        <div class="glass-card" style="margin-bottom: 0;">
+            <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+                <i class="fa-solid fa-sliders" style="color: var(--accent-amber); margin-right: 0.5rem;"></i> Quick Management Tasks
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <a href="{% url 'get_all_books' %}" class="btn-secondary" style="justify-content: center; font-size: 0.85rem;">
+                    <i class="fa-solid fa-list-check"></i> Manage Catalog
+                </a>
+                <a href="/admin/app/book/" target="_blank" class="btn-secondary" style="justify-content: center; font-size: 0.85rem;">
+                    <i class="fa-solid fa-database"></i> Database Models
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Audit Log Table -->
+<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700;">
+            <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary); margin-right: 0.5rem;"></i> Recent Inventory Additions
+        </h2>
+        <a href="{% url 'get_all_books' %}" class="btn-secondary btn-sm">Full Catalog</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cover</th>
+                    <th>Book Info</th>
+                    <th>Genre</th>
+                    <th>ISBN</th>
+                    <th>Price</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in recent_books %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--text-muted);">#{{ book.id }}</td>
+                    <td>
+                        {% if book.cover %}
+                            <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="book-cover-thumb" />
+                        {% else %}
+                            <div class="cover-fallback"><i class="fa-solid fa-book"></i></div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'book_detail' book.pk %}" style="text-decoration: none; color: var(--text-primary); font-weight: 700;">{{ book.title }}</a>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">{{ book.author }}</div>
+                    </td>
+                    <td><span class="badge-genre">{{ book.genre }}</span></td>
+                    <td><code style="color: var(--text-secondary);">{{ book.isbn }}</code></td>
+                    <td class="price-text">${{ book.price }}</td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'edit_book' book.pk %}" class="icon-btn edit" title="Edit"><i class="fa-regular fa-pen-to-square"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items recorded in database.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

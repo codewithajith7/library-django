@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Library Management System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'list.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Sticky Glass Navigation -->
+    <nav class="navbar">
+        <a href="{% url 'welcome' %}" class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <span>LibNexus</span>
+        </a>
+        <ul class="nav-links">
+            <li>
+                <a href="{% url 'welcome' %}" class="nav-link {% if request.resolver_match.url_name == 'welcome' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i> Overview
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'get_all_books' %}" class="nav-link {% if request.resolver_match.url_name == 'get_all_books' or request.resolver_match.url_name == 'book_detail' or request.resolver_match.url_name == 'edit_book' %}active{% endif %}">
+                    <i class="fa-solid fa-books"></i> Catalog
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-shield-halved"></i> Admin Panel
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'add_book' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> Add Book
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="app-container">
+        <!-- Toast Alerts -->
+        {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                <span>
+                    {% if message.tags == 'error' %}
+                        <i class="fa-solid fa-circle-exclamation" style="margin-right: 0.5rem;"></i>
+                    {% else %}
+                        <i class="fa-solid fa-circle-check" style="margin-right: 0.5rem;"></i>
+                    {% endif %}
+                    {{ message }}
+                </span>
+                <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 LibNexus Library Management System. Crafted for high efficiency and design excellence.</p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
