@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 
-{% block title %}Add New Book - LibNexus{% endblock %}
+{% block title %}Add New Book - LibNexus Cyber Engine{% endblock %}
 
 {% block content %}
 <div class="form-container">
     <div style="margin-bottom: 1.5rem;">
         <a href="{% url 'get_all_books' %}" class="btn-secondary btn-sm">
-            <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+            <i class="fa-solid fa-arrow-left"></i> Return to Catalog
         </a>
     </div>
 
     <div class="glass-card">
         <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
-            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800;">
-                <i class="fa-solid fa-circle-plus" style="color: var(--primary); margin-right: 0.5rem;"></i> Add New Book
+            <h1 style="font-family: 'Orbitron', 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800; letter-spacing: 0.02em;">
+                <i class="fa-solid fa-circle-plus" style="color: var(--neon-cyan); margin-right: 0.5rem; text-shadow: 0 0 10px var(--neon-cyan-glow);"></i> Register New Book
             </h1>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-                Enter the details below to add a new book to the library repository.
+                Enter book parameters below to store a new entry in the library repository.
             </p>
         </div>
 
@@ -24,52 +24,52 @@
             {% csrf_token %}
             
             <div class="form-group">
-                <label for="{{ form.title.id_for_label }}"><i class="fa-solid fa-heading" style="width: 18px;"></i> Book Title</label>
+                <label for="{{ form.title.id_for_label }}"><i class="fa-solid fa-heading" style="width: 20px; color: var(--neon-cyan);"></i> Book Title</label>
                 {{ form.title }}
-                {% if form.title.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.title.errors.0 }}</div>{% endif %}
+                {% if form.title.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.title.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.author.id_for_label }}"><i class="fa-solid fa-user-pen" style="width: 18px;"></i> Author Name</label>
+                <label for="{{ form.author.id_for_label }}"><i class="fa-solid fa-user-pen" style="width: 20px; color: var(--neon-cyan);"></i> Author Name</label>
                 {{ form.author }}
-                {% if form.author.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.author.errors.0 }}</div>{% endif %}
+                {% if form.author.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.author.errors.0 }}</div>{% endif %}
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label for="{{ form.genre.id_for_label }}"><i class="fa-solid fa-tags" style="width: 18px;"></i> Genre</label>
+                    <label for="{{ form.genre.id_for_label }}"><i class="fa-solid fa-tags" style="width: 20px; color: var(--neon-violet);"></i> Genre / Category</label>
                     {{ form.genre }}
-                    {% if form.genre.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.genre.errors.0 }}</div>{% endif %}
+                    {% if form.genre.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.genre.errors.0 }}</div>{% endif %}
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.isbn.id_for_label }}"><i class="fa-solid fa-barcode" style="width: 18px;"></i> ISBN Number</label>
+                    <label for="{{ form.isbn.id_for_label }}"><i class="fa-solid fa-barcode" style="width: 20px; color: var(--neon-cyan);"></i> ISBN Code</label>
                     {{ form.isbn }}
-                    {% if form.isbn.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.isbn.errors.0 }}</div>{% endif %}
+                    {% if form.isbn.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.isbn.errors.0 }}</div>{% endif %}
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="{{ form.price.id_for_label }}"><i class="fa-solid fa-dollar-sign" style="width: 18px;"></i> Price ($)</label>
+                <label for="{{ form.price.id_for_label }}"><i class="fa-solid fa-indian-rupee-sign" style="width: 20px; color: var(--neon-emerald);"></i> Price in Rupees (₹)</label>
                 {{ form.price }}
-                {% if form.price.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.price.errors.0 }}</div>{% endif %}
+                {% if form.price.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.price.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.cover.id_for_label }}"><i class="fa-solid fa-image" style="width: 18px;"></i> Book Cover Image</label>
+                <label for="{{ form.cover.id_for_label }}"><i class="fa-solid fa-image" style="width: 20px; color: var(--neon-cyan);"></i> Cover Graphic File</label>
                 {{ form.cover }}
-                {% if form.cover.errors %}<div style="color: var(--accent-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.cover.errors.0 }}</div>{% endif %}
+                {% if form.cover.errors %}<div style="color: var(--neon-rose); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.cover.errors.0 }}</div>{% endif %}
                 
                 <div id="imagePreviewBox" class="cover-preview-box" style="display: none;">
                     <img id="imagePreview" src="#" alt="Cover Preview" class="cover-preview-thumb" />
-                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Selected Cover Preview</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Cover Preview</span>
                 </div>
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
                 <a href="{% url 'get_all_books' %}" class="btn-secondary">Cancel</a>
-                <button type="submit" class="btn-primary" style="padding: 0.75rem 1.75rem;">
-                    <i class="fa-solid fa-check"></i> Save Book
+                <button type="submit" class="btn-primary" style="padding: 0.8rem 1.85rem;">
+                    <i class="fa-solid fa-check"></i> Save Record
                 </button>
             </div>
         </form>

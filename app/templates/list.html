@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Book Catalog - LibNexus{% endblock %}
+{% block title %}Book Catalog - LibNexus Cyber Engine{% endblock %}
 
 {% block content %}
 <div class="glass-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800;">
-                <i class="fa-solid fa-book-bookmark" style="color: var(--primary); margin-right: 0.5rem;"></i> Book Catalog
+            <h1 style="font-family: 'Orbitron', 'Plus Jakarta Sans', sans-serif; font-size: 1.85rem; font-weight: 800; letter-spacing: 0.02em;">
+                <i class="fa-solid fa-book-bookmark" style="color: var(--neon-cyan); margin-right: 0.5rem; text-shadow: 0 0 10px var(--neon-cyan-glow);"></i> Master Book Catalog
             </h1>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-                Showing {{ total_count }} book{{ total_count|pluralize }} matching your parameters.
+                Displaying <strong style="color: var(--neon-cyan);" id="visibleCount">{{ total_count }}</strong> book{{ total_count|pluralize }} in system repository.
             </p>
         </div>
 
@@ -19,11 +19,11 @@
         </a>
     </div>
 
-    <!-- Filter & Search Toolbar -->
+    <!-- Filter & Search Toolbar with Instant Live Search -->
     <form method="GET" action="{% url 'get_all_books' %}" class="toolbar">
         <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
-            <input type="text" name="q" value="{{ query }}" placeholder="Search by Title, Author, or ISBN..." />
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--neon-cyan);"></i>
+            <input type="text" id="liveSearchInput" name="q" value="{{ query }}" placeholder="Type for instant search by Title, Author, or ISBN..." autocomplete="off" />
         </div>
 
         <div class="filter-group">
@@ -41,7 +41,7 @@
                 <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
             </select>
 
-            <button type="submit" class="btn-secondary btn-sm">Filter</button>
+            <button type="submit" class="btn-secondary btn-sm">Apply Filter</button>
             {% if query or genre_filter or sort_by %}
                 <a href="{% url 'get_all_books' %}" class="btn-danger btn-sm" style="padding: 0.5rem 0.75rem;"><i class="fa-solid fa-xmark"></i> Clear</a>
             {% endif %}
@@ -50,7 +50,7 @@
 
     <!-- Table View -->
     <div class="table-wrapper">
-        <table class="custom-table">
+        <table class="custom-table" id="catalogTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -58,38 +58,38 @@
                     <th>Book Details</th>
                     <th>Genre</th>
                     <th>ISBN</th>
-                    <th>Price</th>
+                    <th>Price (₹)</th>
                     <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="catalogTableBody">
                 {% for book in books %}
-                <tr>
-                    <td style="font-weight: 700; color: var(--text-muted); font-size: 0.85rem;">#{{ book.id }}</td>
+                <tr class="book-row">
+                    <td style="font-weight: 700; color: var(--text-muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">#{{ book.id }}</td>
                     <td>
                         {% if book.cover %}
                             <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="book-cover-thumb" />
                         {% else %}
                             <div class="cover-fallback">
-                                <i class="fa-solid fa-book" style="color: var(--text-muted);"></i>
+                                <i class="fa-solid fa-book"></i>
                             </div>
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{% url 'book_detail' book.pk %}" style="text-decoration: none; color: var(--text-primary); font-weight: 700; font-size: 1rem; display: block;">
+                        <a href="{% url 'book_detail' book.pk %}" class="book-title-link" style="text-decoration: none; color: var(--text-primary); font-weight: 700; font-size: 1rem; display: block;">
                             {{ book.title }}
                         </a>
-                        <span style="color: var(--text-secondary); font-size: 0.85rem;">by {{ book.author }}</span>
+                        <span class="book-author-text" style="color: var(--text-secondary); font-size: 0.85rem;">by {{ book.author }}</span>
                     </td>
                     <td>
                         <span class="badge-genre">{{ book.genre }}</span>
                     </td>
                     <td>
-                        <code style="background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.825rem; color: var(--text-secondary);">
+                        <code class="book-isbn-text" style="background: rgba(0, 243, 255, 0.08); border: 1px solid var(--border-glass); padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.825rem; color: var(--neon-cyan); font-family: 'JetBrains Mono', monospace;">
                             {{ book.isbn }}
                         </code>
                     </td>
-                    <td class="price-text">${{ book.price }}</td>
+                    <td class="price-text"><span class="rupee-symbol">₹</span>{{ book.price }}</td>
                     <td>
                         <div class="action-btn-group" style="justify-content: flex-end;">
                             <a href="{% url 'book_detail' book.pk %}" class="icon-btn" title="View Details">
@@ -107,9 +107,9 @@
                 {% empty %}
                 <tr>
                     <td colspan="7" style="text-align: center; padding: 4rem 1rem;">
-                        <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
-                        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1rem;">No books matched your criteria.</p>
-                        <a href="{% url 'add_book' %}" class="btn-primary"><i class="fa-solid fa-plus"></i> Add New Book</a>
+                        <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1rem;">No books found matching your parameters.</p>
+                        <a href="{% url 'add_book' %}" class="btn-primary"><i class="fa-solid fa-plus"></i> Add New Book Entry</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -121,19 +121,19 @@
 <!-- Modal for Deletion Confirmation -->
 <div id="deleteModal" class="modal-overlay" style="display: none;">
     <div class="modal-card">
-        <div style="width: 60px; height: 60px; background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem auto;">
+        <div style="width: 60px; height: 60px; background: rgba(255, 0, 85, 0.15); color: var(--neon-rose); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem auto; border: 1px solid rgba(255, 0, 85, 0.3);">
             <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
-        <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem;">Delete Book?</h2>
+        <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">Delete Book Record?</h2>
         <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem;" id="deleteModalMessage">
-            Are you sure you want to permanently delete this book from the catalog?
+            Are you sure you want to permanently delete this book entry from the database?
         </p>
 
         <form id="deleteForm" method="POST" action="">
             {% csrf_token %}
             <div style="display: flex; gap: 0.75rem; justify-content: center;">
                 <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button type="submit" class="btn-danger" style="padding: 0.65rem 1.5rem; font-weight: 600;">Confirm Delete</button>
+                <button type="submit" class="btn-danger" style="padding: 0.65rem 1.5rem; font-weight: 700;">Confirm Delete</button>
             </div>
         </form>
     </div>
@@ -142,13 +142,14 @@
 
 {% block extra_scripts %}
 <script>
+    // Delete Modal logic
     function openDeleteModal(bookId, title) {
         const modal = document.getElementById('deleteModal');
         const form = document.getElementById('deleteForm');
         const message = document.getElementById('deleteModalMessage');
         
         form.action = `/books/${bookId}/delete/`;
-        message.innerHTML = `Are you sure you want to permanently delete <strong>"${title}"</strong>? This action cannot be undone.`;
+        message.innerHTML = `Are you sure you want to permanently delete <strong style="color: var(--neon-rose);">"${title}"</strong>? This action cannot be undone.`;
         modal.style.display = 'flex';
     }
 
@@ -156,9 +157,32 @@
         document.getElementById('deleteModal').style.display = 'none';
     }
 
-    // Close modal on escape key
     window.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeDeleteModal();
     });
+
+    // Instant Client-side Live Filter Script
+    const liveSearchInput = document.getElementById('liveSearchInput');
+    const tableRows = document.querySelectorAll('.book-row');
+    const visibleCountEl = document.getElementById('visibleCount');
+
+    if (liveSearchInput && tableRows.length > 0) {
+        liveSearchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let count = 0;
+
+            tableRows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                    count++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (visibleCountEl) visibleCountEl.innerText = count;
+        });
+    }
 </script>
 {% endblock %}
